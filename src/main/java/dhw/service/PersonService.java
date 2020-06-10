@@ -17,6 +17,7 @@ public class PersonService {
     private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final LocalDate CUTOFF_DATE = LocalDate.parse("1999-12-31", DTF);
     private LocalDate dob = null;
+    PersonDAO personDAO = new PersonDAO();
     /**
      *
      * @param datafileLocation  Location of file of person data
@@ -28,14 +29,15 @@ public class PersonService {
     public List<Person> prepareListPersons(String datafileLocation, String charEncoding)throws Exception{
 
         // Obtain a string representation of the contents of person test data.json in character coding of project
-        String data = PersonDAO.readDataFile(datafileLocation, charEncoding);
+        String data = personDAO.readDataFile(datafileLocation, charEncoding);
         if (data == null || data.trim().isEmpty()) {
             System.err.println("Empty file read at " + datafileLocation);
             throw new Exception("Unable to read file or no data read from file");
         }
 
         // Use Jackson object mapper to map a Json string into the Person object
-        String [] personsStr = data.substring(1,data.length()-2).split("\\},");
+
+        String [] personsStr = data.substring(data.indexOf("{"),data.length()-1).split("\\},");
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 
@@ -43,11 +45,12 @@ public class PersonService {
         List<Person> persons = Arrays.stream(personsStr).
                 map(str -> {
                     try{
-                    Person ps =  objectMapper.readValue(str + "}", Person.class);
-                    return ps;
+                        Person ps =  objectMapper.readValue(str + "}", Person.class);
+                        return ps;
                     }catch (Exception e){
-                        e.printStackTrace();
-                        return new Person();
+                        Person personErr = new Person();
+                        personErr.setPerson_id("Invalid person");
+                        return personErr;
                     }
                 })
                 .collect(Collectors.toList());
@@ -59,16 +62,20 @@ public class PersonService {
         Comparator<Person> byFirstLastName = Comparator.comparing(byFirstName).thenComparing(byLastName);
         List<Person> personsFilterDistinctSorted = new ArrayList<>(personsStr.length - 1);
         return personsFilterDistinctSorted = persons.stream().filter(person -> {
+                    if (person.getDate_of_birth() == null){
+                        return false;
+                    }
                     try {
                         dob = LocalDate.parse(person.getDate_of_birth(), DTF);
                     } catch (DateTimeParseException e) {
-                        System.err.println("Unable to parse date of birth for customer id " + person.getPerson_id());
-                        throw e;
+                        return false;
                     }
-                    return dob.isBefore(CUTOFF_DATE);
+                    return (dob.isBefore(CUTOFF_DATE) || person.getPerson_id().equals("Invalid person"));
                 })
                 .sorted(byFirstLastName)
                 .distinct()
                 .collect(Collectors.toList());
     }
+
+
 }

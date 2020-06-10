@@ -13,7 +13,7 @@ public class PersonDAO {/**
  * @throws Exception        In case of error when reading file
  */
  //   public static String readDataFile(String datafileLocation, String charEncoding) {
-    public static String readDataFile(String datafileLocation, String charEncoding) {
+    public String readDataFile(String datafileLocation, String charEncoding) {
         try {
             byte[] jk = Files.readAllBytes(Paths.get(datafileLocation));
             return new String(jk, 0, jk.length, charEncoding);

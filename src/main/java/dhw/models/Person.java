@@ -33,6 +33,9 @@ public class Person {
     private String org_id;
     private String area_id;
 
+//    public Person(String personId){
+//        this.person_id = personId;
+//    }
     public String getPerson_id() {
         return person_id;
     }
