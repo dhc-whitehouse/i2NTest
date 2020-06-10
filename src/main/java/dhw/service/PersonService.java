@@ -21,27 +21,21 @@ public class PersonService {
      *
      * @param datafileLocation  Location of file of person data
      * @param charEncoding      Character coding used by person data
-     * @return List<Person>     List of distinct persons filted by birth data befoe</Person>
+     * @return List<Person>     List of distinct persons filtered by birth date and sorted by firstName and LastName
      * @throws Exception
      */
 
     public List<Person> prepareListPersons(String datafileLocation, String charEncoding)throws Exception{
 
         // Obtain a string representation of the contents of person test data.json in character coding of project
-        String data = null;
-        try {
-            data = PersonDAO.readDataFile(datafileLocation, charEncoding);
-            if (data == null || data.trim().isEmpty()) {
-                System.err.println("Empty file read at " + datafileLocation);
-                throw new Exception("Unable to read file");
-            }
-        }catch (Exception e){
-            throw e;
+        String data = PersonDAO.readDataFile(datafileLocation, charEncoding);
+        if (data == null || data.trim().isEmpty()) {
+            System.err.println("Empty file read at " + datafileLocation);
+            throw new Exception("Unable to read file or no data read from file");
         }
 
+        // Use Jackson object mapper to map a Json string into the Person object
         String [] personsStr = data.substring(1,data.length()-2).split("\\},");
-
-        // Prepare Jackson object mapper to map a Json string into the Person object
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 

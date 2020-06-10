@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.HashMap;
@@ -19,6 +20,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -27,8 +29,8 @@ public class PersonServiceTest {
     @InjectMocks
     private PersonService personService;
 
-    @Mock
-    private PersonDAO personDAO;
+   // @Mock
+  //  private PersonDAO personDAO;
 
     //Define some static test values
     private String DAO_STRING;
@@ -75,13 +77,15 @@ public class PersonServiceTest {
     @Test
     public void checkPrepareListPersons() {
      //   when(personDAO.readDataFile(anyString(), anyString())).thenReturn(DAO_STRING);
-        doReturn(DAO_STRING).when(personDAO).readDataFile(anyString(), anyString());
-        try {
-            List<Person> persons = personService.prepareListPersons("", "");
-            assertEquals(1, persons.size());
-            assertEquals("49fdd3c7-971d-4599-9cd7-a6ccf5513995",persons.get(1).getPerson_id());
-        }catch (Exception e){
-    e.printStackTrace();
-        }
+//        PersonDAO mockDAO = Mockito.mock(PersonDAO.class);
+//        PersonService ps = mock(PersonService.class);
+//        doReturn(DAO_STRING).when(mockDAO).readDataFile(anyString(), anyString());
+//        try {
+//            List<Person> persons = personService.prepareListPersons("", "");
+//            assertEquals(1, persons.size());
+//            assertEquals("49fdd3c7-971d-4599-9cd7-a6ccf5513995",persons.get(1).getPerson_id());
+//        }catch (Exception e){
+//    e.printStackTrace();
+//        }
         }
 }
